@@ -35,7 +35,10 @@ setup_input_arrays : Setups up the arrays for all Procrustes methods.  It checks
 
 import numpy as np
 
-__all__ = ["error", "setup_input_arrays"]
+__all__ = [
+    "error",
+    "setup_input_arrays"
+]
 
 
 def _zero_padding(array_a, array_b, pad_mode="row-col"):

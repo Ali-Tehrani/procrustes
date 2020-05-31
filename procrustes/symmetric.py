@@ -25,6 +25,8 @@
 import numpy as np
 from procrustes.utils import error, setup_input_arrays
 
+__all__ = ["symmetric"]
+
 
 def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
               pad_mode='row-col', translate=False, scale=False, check_finite=True):

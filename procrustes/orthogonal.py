@@ -379,18 +379,17 @@ def orthogonal_2sided(array_a, array_b, remove_zero_col=True, remove_zero_row=Tr
 
     # Do single-transformation computation if requested
     if single_transform:
-        array_ua, _ = np.linalg.eigh(array_a)
-        array_ub, _ = np.linalg.eigh(array_b)
+        _, array_ua = np.linalg.eigh(array_a)
+        _, array_ub = np.linalg.eigh(array_b)
         u_opt = array_ua.dot(array_ub.T)
 
         # the error
         e_opt = error(array_a, array_b, u_opt, u_opt)
         return array_a, array_b, u_opt, e_opt
     # Do regular two-sided orthogonal Procrustes calculations
-    else:
-        u_opt1, u_opt2 = _2sided(array_a, array_b)
-        e_opt = error(array_a, array_b, u_opt1, u_opt2)
-        return array_a, array_b, u_opt1, u_opt2, e_opt
+    u_opt1, u_opt2 = _2sided(array_a, array_b)
+    e_opt = error(array_a, array_b, u_opt1, u_opt2)
+    return array_a, array_b, u_opt1, u_opt2, e_opt
 
 
 def _2sided(array_a, array_b):

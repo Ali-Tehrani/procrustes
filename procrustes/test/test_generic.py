@@ -101,7 +101,7 @@ def test_generic_rectangular_scale(m, n):
         assert_almost_equal(res["t"], array_x * norm_a / norm_b, decimal=6)
 
 
-@pytest.mark.parametrize("m, n", np.random.randint(500, 1000, (5, 2)))
+@pytest.mark.parametrize("m, n", np.random.randint(50, 100, (5, 2)))
 def test_generic_rectangular_translate_scale(m, n):
     r"""Test generic Procrustes with random square matrices & translation."""
     # random input, transformation arrays, & translation (size=mxn)

@@ -32,20 +32,30 @@ from procrustes.permutation import (_2sided_1trans_initial_guess_normal1,
                                     _2sided_1trans_initial_guess_umeyama,
                                     permutation, permutation_2sided,
                                     permutation_2sided_explicit)
+import pytest
 
 
-def test_permutation_columns():
-    r"""Test permutation Procrustes with permuted rows."""
-    # square array
-    array_a = np.array([[1, 5, 8, 4], [1, 5, 7, 2], [1, 6, 9, 3], [2, 7, 9, 4]])
+def generate_random_permutation_matrix(n):
+    arr = np.arange(0, n)
+    np.random.shuffle(arr)
+    permutation = np.zeros((n, n))
+    permutation[np.arange(0, n), arr] = 1.
+    return permutation
+
+
+@pytest.mark.parametrize("n", np.random.randint(500, 1000, (25)))
+def test_permutation_square_matrices_rows_permuted(n):
+    r"""Test permutation Procrustes with square matrices and permuted rows."""
+    # square matrix
+    array_a = np.random.uniform(-10.0, 10.0, (n, n))
     # permutation
-    perm = np.array([[0, 0, 0, 1], [0, 0, 1, 0], [1, 0, 0, 0], [0, 1, 0, 0]])
+    perm = generate_random_permutation_matrix(n)
     # permuted array_b
     array_b = np.dot(array_a, perm)
     # procrustes with no translate and scale
     res = permutation(array_a, array_b)
-    assert_almost_equal(res["t"], perm, decimal=6)
-    assert_almost_equal(res["error"], 0., decimal=6)
+    assert_almost_equal(res.t, perm, decimal=6)
+    assert_almost_equal(res.error, 0., decimal=6)
 
 
 def test_permutation_columns_pad():

@@ -86,6 +86,7 @@ def test_permutation_with_translate_scale(m, n):
     array_a = np.random.uniform(-10.0, 10.0, (m, n))
     # array_b is scaled, translated, and permuted array_a
     perm = generate_random_permutation_matrix(n)
+    # Obtain random translation/shift array and permute the array.
     shift = np.random.uniform(-10.0, 10.0, (n,))
     array_b = 3.78 * array_a + shift
     array_b = np.dot(array_b, perm)
@@ -93,24 +94,6 @@ def test_permutation_with_translate_scale(m, n):
     res = permutation(array_a, array_b, translate=True, scale=True)
     assert_almost_equal(res.t, perm, decimal=6)
     assert_almost_equal(res.error, 0., decimal=6)
-
-
-def test_permutation_translate_scale_padd():
-    r"""Test permutation by scaled arrays with zero paddings."""
-    # rectangular array_a
-    array_a = np.array([[118.51, 515.27, 831.61, 431.62],
-                        [161.61, 535.13, 763.16, 261.63],
-                        [116.31, 661.34, 961.31, 363.15],
-                        [236.16, 751.36, 913.51, 451.22]])
-    # array_b is scaled, translated, and permuted array_a
-    array_b = 51.63 * array_a + np.array([56.24, 79.32, 26.15, 49.52])
-    perm = np.array([[0., 0., 0., 1.], [0., 1., 0., 0.],
-                     [0., 0., 1., 0.], [1., 0., 0., 0.]])
-    array_b = np.dot(array_b, perm)
-    # check
-    res = permutation(array_a, array_b, translate=True, scale=True)
-    assert_almost_equal(res["t"], perm, decimal=6)
-    assert_almost_equal(res["error"], 0., decimal=6)
 
 
 def test_2sided_1trans_initial_guess_normal1_positive():

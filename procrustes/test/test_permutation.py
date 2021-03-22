@@ -206,22 +206,22 @@ def test_2sided_1trans_initial_guess_umeyama():
     assert_almost_equal(u_umeyama, array_u, decimal=3)
 
 
-def test_permutation_2sided_4by4_umeyama():
+@pytest.mark.parametrize("n", np.random.randint(50, 100, (10,)))
+def test_permutation_2sided_umeyama(n):
     r"""Test 2sided-perm with umeyama guess by 4by4 arrays."""
     # define a random matrix
-    array_a = np.array([[4, 5, 3, 3], [5, 7, 3, 5],
-                        [3, 3, 2, 2], [3, 5, 2, 5]])
+    array_a = np.random.uniform(-10.0, 10.0, (n, n))
     # define array_b by permuting array_a
-    perm = np.array([[0., 0., 1., 0.], [1., 0., 0., 0.],
-                     [0., 0., 0., 1.], [0., 1., 0., 0.]])
+    perm = generate_random_permutation_matrix(n)
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # Check
     res = permutation_2sided(array_a, array_b, transform_mode="single", mode="umeyama")
-    assert_almost_equal(res["t"], perm, decimal=6)
-    assert_almost_equal(res["error"], 0, decimal=6)
+    assert_almost_equal(res.t, perm, decimal=6)
+    assert_almost_equal(res.error, 0, decimal=6)
+    assert_equal(res.s, None)
 
 
-def test_permutation_2sided_4by4_umeyama_loop():
+def test_permutation_2sided_4by4_umeyama_all_permutations():
     r"""Test 2sided-perm with umeyama guess by 4by4 arrays for all permutations."""
     # define a random matrix
     array_a = np.array([[4, 5, 3, 3], [5, 7, 3, 5],

@@ -393,28 +393,28 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
                                                           new_b_positive,
                                                           mode, add_noise)
             # Compute the permutation matrix by iterations
-            array_u = _compute_transform(new_a_positive, new_b_positive,
+            array_p = _compute_transform(new_a_positive, new_b_positive,
                                          guess, tol, iteration)
             # k-opt heuristic
             if kopt:
-                array_u, error = kopt_heuristic_single(a=new_a_positive, b=new_b_positive,
-                                                       p=array_u, k=kopt_k)
+                array_p, error = kopt_heuristic_single(a=new_a_positive, b=new_b_positive,
+                                                       p=array_p, k=kopt_k)
             else:
-                error = compute_error(new_a_positive, new_b_positive, array_u, array_u.T)
+                error = compute_error(new_a_positive, new_b_positive, array_p, array_p.T)
         # algorithm for directed graph matching problem
         else:
             # the initial guess
             guess = _2sided_1trans_initial_guess_directed(new_a_positive, new_b_positive)
             # Compute the permutation matrix by iterations
-            array_u = _compute_transform_directed(new_a_positive, new_b_positive,
+            array_p = _compute_transform_directed(new_a_positive, new_b_positive,
                                                   guess, tol, iteration)
             # k-opt heuristic
             if kopt:
-                array_u, error = kopt_heuristic_single(a=new_a_positive, b=new_b_positive,
-                                                       p=array_u, k=kopt_k)
+                array_p, error = kopt_heuristic_single(a=new_a_positive, b=new_b_positive,
+                                                       p=array_p, k=kopt_k)
             else:
-                error = compute_error(new_a_positive, new_b_positive, array_u, array_u.T)
-        return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=array_u, s=None)
+                error = compute_error(new_a_positive, new_b_positive, array_p, array_p.T)
+        return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=array_p, s=None)
 
     # Do regular computation
     elif transform_mode == "double":

@@ -446,32 +446,6 @@ def test_permutation_2sided_normal1_translate_scale_zero_padding(n, ncol, nrow, 
     assert_almost_equal(res["error"], 0, decimal=6)
 
 
-def test_permutation_2sided_normal1_practical_example():
-    r"""Test 2sided-perm with "normal1" by practical example."""
-    # Example taken from page 64 in parallel solution of
-    # svd-related problems, with applications
-    # vummath.ma.man.ac.uk/~higham/links/theses/papad93.pdf
-    # https://books.google.ca/books/about/Parallel_Solution_of_
-    # SVD_related_Problem.html?id=_aVWcgAACAAJ&redir_esc=y
-    array_a = np.array([[32, 14, 3, 63, 50],
-                        [24, 22, 1, 56, 4],
-                        [94, 16, 28, 75, 81],
-                        [19, 72, 42, 90, 54],
-                        [71, 85, 10, 96, 58]])
-    perm = np.array([[0, 0, 0, 0, 1],
-                     [0, 0, 1, 0, 0],
-                     [0, 1, 0, 0, 0],
-                     [0, 0, 0, 1, 0],
-                     [1, 0, 0, 0, 0]])
-    array_b = np.dot(perm.T, np.dot(array_a, perm))
-    # Check
-    res = permutation_2sided(
-        array_a, array_b, transform_mode="single",
-        translate=True, scale=True, mode="normal1")
-    assert_almost_equal(res["t"], perm, decimal=6)
-    assert_almost_equal(res["error"], 0, decimal=6)
-
-
 def test_permutation_2sided_4by4_normal2():
     r"""Test 2sided-perm with "normal2" by 4by4 arrays."""
     # define a random matrix

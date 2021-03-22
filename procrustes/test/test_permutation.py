@@ -277,28 +277,26 @@ def test_permutation_2sided_4by4_umeyama_translate_scale_all_permutations(n):
         assert_equal(res.s, None)
 
 
-def test_permutation_2sided_4by4_umeyama_translate_scale_zero_padding():
+@pytest.mark.parametrize("n, ncol, nrow", np.random.randint(50, 100, (10, 3)))
+def test_permutation_2sided_4by4_umeyama_translate_scale_zero_padding(n, ncol, nrow):
     r"""Test umeyama guess by 4by4 array with trans, scale and puddings for all permutations."""
     # define a random matrix
-    array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5],
-                        [-3, 3, 2, 2], [3, -5, 2, 5]])
+    array_a = np.random.uniform(-10.0, 10.0, (n, n))
     # check with all possible permutation matrices
-    perm = np.array([[0, 0, 1, 0],
-                     [1, 0, 0, 0],
-                     [0, 1, 0, 0],
-                     [0, 0, 0, 1]])
+    perm = generate_random_permutation_matrix(n)
     # Compute the translated, scaled matrix padded with zeros
     array_b = np.dot(perm.T, np.dot(20 * array_a + 8, perm))
-    # pad the matrices with zeros
-    array_a = np.concatenate((array_a, np.zeros((4, 3))), axis=1)
-    array_a = np.concatenate((array_a, np.zeros((10, 7))), axis=0)
-    array_b = np.concatenate((array_b, np.zeros((4, 2))), axis=1)
-    array_b = np.concatenate((array_b, np.zeros((6, 6))), axis=0)
-    # Check
+    # pad both of the matrices with zeros
+    array_a = np.concatenate((array_a, np.zeros((n, 3))), axis=1)
+    array_a = np.concatenate((array_a, np.zeros((10, n + 3))), axis=0)
+    array_b = np.concatenate((array_b, np.zeros((n, ncol))), axis=1)
+    array_b = np.concatenate((array_b, np.zeros((nrow, n + ncol))), axis=0)
+
     res = permutation_2sided(array_a, array_b, transform_mode="single",
                              translate=True, scale=True, mode="umeyama")
-    assert_almost_equal(res["t"], perm, decimal=6)
-    assert_almost_equal(res["error"], 0, decimal=6)
+    assert_almost_equal(res.t, perm, decimal=6)
+    assert_almost_equal(res.error, 0, decimal=6)
+    assert_equal(res.s, None)
 
 
 def test_permutation_2sided_4by4_umeyama_approx():

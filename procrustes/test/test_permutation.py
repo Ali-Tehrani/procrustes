@@ -336,22 +336,22 @@ def test_permutation_2sided_4by4_umeyama_approx_loop():
         assert_almost_equal(res["error"], 0, decimal=6)
 
 
-def test_permutation_2sided_4by4_umeyama_approx_translate_scale():
-    r"""Test 2sided-perm with "umeyama_approx" by 4by4 arrays with translation and scaling."""
-    # define a random matrix
-    array_a = np.array([[5., 2., 1.], [4., 6., 1.], [1., 6., 3.]])
+@pytest.mark.parametrize("n", np.random.randint(50, 100, (25,)))
+def test_permutation_2sided_symmetric_umeyama_approx_translate_scale(n):
+    r"""Test 2sided-perm with "umeyama_approx" by symmetric with translation and scaling."""
+    # define a random, symmetric matrix
+    array_a = np.random.uniform(-10.0, 10.0, (n, n))
     array_a = np.dot(array_a, array_a.T)
     # define array_b by scale-translate array_a and permuting
-    shift = np.array([[3.14, 3.14, 3.14],
-                      [3.14, 3.14, 3.14],
-                      [3.14, 3.14, 3.14]])
-    perm = np.array([[1., 0., 0.], [0., 0., 1.], [0., 1., 0.]])
+    shift = np.random.uniform(-10.0, 10.0, n)
+    perm = generate_random_permutation_matrix(n)
     array_b = np.dot(perm.T, np.dot((14.7 * array_a + shift), perm))
     # Check
     res = permutation_2sided(array_a, array_b, transform_mode="single",
                              translate=True, scale=True, mode="umeyama_approx")
-    assert_almost_equal(res["t"], perm, decimal=6)
-    assert_almost_equal(res["error"], 0, decimal=6)
+    assert_almost_equal(res.t, perm, decimal=6)
+    assert_almost_equal(res.error, 0, decimal=6)
+    assert_equal(res.s, None)
 
 
 def test_permutation_2sided_4by4_umeyama_approx_translate_scale_zero_padding():

@@ -256,23 +256,25 @@ def test_permutation_2sided_symmetric_umeyama_translate_scale(n):
     assert_equal(res.s, None)
 
 
-def test_permutation_2sided_4by4_umeyama_translate_scale_loop():
+@pytest.mark.parametrize("n", [3, 4, 5])
+def test_permutation_2sided_4by4_umeyama_translate_scale_all_permutations(n):
     r"""Test umeyama guess by 4by4 arrays with trans and scale for all permutations."""
     # define a random matrix
-    array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5],
-                        [-3, 3, 2, 2], [3, -5, 2, 5]])
+    array_a = np.random.uniform(-10.0, 10.0, (n, n))
     # check with all possible permutation matrices
-    for comb in itertools.permutations(np.arange(4)):
+    for comb in itertools.permutations(np.arange(n)):
         # Compute the permutation matrix
-        perm = np.zeros((4, 4))
-        perm[np.arange(4), comb] = 1
-        # Compute the translated, scaled matrix padded with zeros
-        array_b = np.dot(perm.T, np.dot(60 * array_a + 15, perm))
-        # Check
+        perm = np.zeros((n, n))
+        perm[np.arange(n), comb] = 1
+        # Compute the translated, scaled matrix
+        shift = np.random.uniform(-10.0, 10.0, n)
+        array_b = np.dot(perm.T, np.dot(60 * array_a + shift, perm))
+
         res = permutation_2sided(array_a, array_b, transform_mode="single",
                                  translate=True, scale=True, mode="umeyama")
-        assert_almost_equal(res["t"], perm, decimal=6)
-        assert_almost_equal(res["error"], 0, decimal=6)
+        assert_almost_equal(res.t, perm, decimal=6)
+        assert_almost_equal(res.error, 0, decimal=6)
+        assert_equal(res.s, None)
 
 
 def test_permutation_2sided_4by4_umeyama_translate_scale_zero_padding():

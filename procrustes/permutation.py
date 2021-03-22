@@ -384,14 +384,14 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
         new_a_positive = new_a.astype(np.float) + maximum
         new_b_positive = new_b.astype(np.float) + maximum
 
-        # algorithm for undirected graph matching problem
+        # algorithm for undirected graph matching problem, ie when matrices are symmetric.
         # check if two matrices are symmetric within a relative tolerance and absolute tolerance.
         if np.allclose(new_a_positive, new_a_positive.T, rtol=1.e-05, atol=1.e-08) and \
                 np.allclose(new_b_positive, new_b_positive.T, rtol=1.e-05, atol=1.e-08):
             # the initial guess
-            guess = _guess_initial_permutation_undirected(new_a_positive,
-                                                          new_b_positive,
-                                                          mode, add_noise)
+            guess = _guess_initial_permutation_symmetric(new_a_positive,
+                                                         new_b_positive,
+                                                         mode, add_noise)
             # Compute the permutation matrix by iterations
             array_p = _compute_transform(new_a_positive, new_b_positive,
                                          guess, tol, iteration)
@@ -401,7 +401,7 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
                                                        p=array_p, k=kopt_k)
             else:
                 error = compute_error(new_a_positive, new_b_positive, array_p, array_p.T)
-        # algorithm for directed graph matching problem
+        # algorithm for directed graph matching problem, ie when matrices are general.
         else:
             # the initial guess
             guess = _2sided_1trans_initial_guess_directed(new_a_positive, new_b_positive)
@@ -631,7 +631,7 @@ def _2sided_1trans_initial_guess_directed(array_a, array_b):
     return array_u
 
 
-def _guess_initial_permutation_undirected(array_a, array_b, mode, add_noise):
+def _guess_initial_permutation_symmetric(array_a, array_b, mode, add_noise):
     mode = mode.lower()
     if mode == "normal1":
         tmp_a = _2sided_1trans_initial_guess_normal1(array_a)

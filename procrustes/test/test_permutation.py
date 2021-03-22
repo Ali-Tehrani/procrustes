@@ -222,8 +222,8 @@ def test_permutation_2sided_umeyama(n):
 
 
 @pytest.mark.parametrize("n", np.random.randint(3, 6, (10,)))
-def test_permutation_2sided_4by4_umeyama_all_permutations(n):
-    r"""Test 2sided-perm with Umeyama guess by 4by4 arrays for all permutations."""
+def test_permutation_2sided_small_matrices_umeyama_all_permutations(n):
+    r"""Test 2sided-perm with Umeyama guess by small matrices for all permutations."""
     # define a random matrix
     array_a = np.random.uniform(-10.0, 10.0, (n, n))
     # check with all possible permutation matrices
@@ -232,23 +232,6 @@ def test_permutation_2sided_4by4_umeyama_all_permutations(n):
         perm[np.arange(n), comb] = 1
         # get array_b by permutation
         array_b = np.dot(perm.T, np.dot(array_a, perm))
-        res = permutation_2sided(array_a, array_b, transform_mode="single", mode="umeyama")
-        assert_almost_equal(res["t"], perm, decimal=6)
-        assert_almost_equal(res["error"], 0, decimal=6)
-
-
-def test_permutation_2sided_4by4_umeyama_loop_negative():
-    r"""Test 2sided-perm with umeyama guess by 4by4 negative arrays for all permutations."""
-    # define a random matrix
-    array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5],
-                        [-3, 3, 2, 2], [3, -5, 2, 5]])
-    # check with all possible permutation matrices
-    for comb in itertools.permutations(np.arange(4)):
-        perm = np.zeros((4, 4))
-        perm[np.arange(4), comb] = 1
-        # get array_b by permutation
-        array_b = np.dot(perm.T, np.dot(array_a, perm))
-        # Check
         res = permutation_2sided(array_a, array_b, transform_mode="single", mode="umeyama")
         assert_almost_equal(res["t"], perm, decimal=6)
         assert_almost_equal(res["error"], 0, decimal=6)

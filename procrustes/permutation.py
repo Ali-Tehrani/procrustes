@@ -137,7 +137,7 @@ def permutation(
 
 
 def permutation_2sided(array_a, array_b, transform_mode="single",
-                       remove_zero_col=True, remove_zero_row=True,
+                       unpad_col=True, unpad_row=True,
                        pad_mode="row-col", translate=False, scale=False,
                        mode="normal1", check_finite=True, iteration=500,
                        add_noise=False, tol=1.0e-8, kopt=False, kopt_k=3,
@@ -166,11 +166,12 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
     Otherwise, transform_mode="double", the
         two-sided permutation Procrustes with two transformations will be performed.
         Default="single_undirected".
-    remove_zero_col : bool, optional
-        If True, zero columns (values less than 1e-8) on the right side will be removed.
-        Default= True.
-    remove_zero_row : bool, optional
-        If True, zero rows (values less than 1e-8) on the bottom will be removed. Default= True.
+    unpad_col : bool, optional
+        If True, zero columns (with values less than 1.0e-8) on the right-hand side of the intial
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.
+    unpad_row : bool, optional
+        If True, zero rows (with values less than 1.0e-8) at the bottom of the intial
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.
     pad_mode : str, optional
         Specifying how to pad the arrays, listed below. Default="row-col".
 

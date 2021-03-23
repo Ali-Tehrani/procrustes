@@ -358,8 +358,9 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
 
     """
     # check inputs
-    new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
-                                      pad_mode, translate, scale, check_finite, weight)
+    new_a, new_b = setup_input_arrays(
+        array_a, array_b, unpad_col, unpad_col, pad, translate, scale, check_finite, weight
+    )
     # Do single-transformation computation if requested
     transform_mode = transform_mode.lower()
     if transform_mode == "single":
@@ -380,8 +381,7 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
                                                          new_b_positive,
                                                          mode, add_noise)
             # Compute the permutation matrix by iterations
-            array_p = _compute_transform(new_a_positive, new_b_positive,
-                                         guess, tol, iteration)
+            array_p = _compute_transform(new_a_positive, new_b_positive, guess, tol, iteration)
             # k-opt heuristic
             if kopt:
                 array_p, error = kopt_heuristic_single(a=new_a_positive, b=new_b_positive,
@@ -405,12 +405,10 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
 
     # Do regular computation
     elif transform_mode == "double":
-        array_m = new_a
-        array_n = new_b
-        array_p, array_q, error = _2sided_regular(array_m, array_n, tol, iteration)
+        array_p, array_q, error = _2sided_regular(new_a, new_b, tol, iteration)
         # perform k-opt heuristic search twice
         if kopt:
-            array_p, array_q, error = kopt_heuristic_double(a=array_m, b=array_n, p1=array_p,
+            array_p, array_q, error = kopt_heuristic_double(a=new_a, b=new_b, p1=array_p,
                                                             p2=array_q, k=kopt_k)
         # return array_m, array_n, array_p, array_q, error
         return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=array_q, s=array_p)

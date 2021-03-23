@@ -609,8 +609,8 @@ def _2sided_1trans_initial_guess_directed(array_a, array_b):
     _, ua_0 = np.linalg.eigh(a_0)
     _, ub_0 = np.linalg.eigh(b_0)
     # Compute the magnitudes of each element
-    array_ua = np.sqrt(np.imag(ua_0) ** 2 + np.real(ua_0) ** 2)
-    array_ub = np.sqrt(np.imag(ub_0) ** 2 + np.real(ub_0) ** 2)
+    array_ua = np.abs(ua_0)
+    array_ub = np.abs(ub_0)
     # compute the initial guess
     array_u = np.dot(array_ua, array_ub.T)
     return array_u

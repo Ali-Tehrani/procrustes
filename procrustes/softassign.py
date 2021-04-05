@@ -133,8 +133,10 @@ def softassign(
     kopt_k : int, optional
         Defines the oder of k-opt heuristic local search. For example, kopt_k=3 leads to a local
         search of 3 items and kopt_k=2 only searches for two items locally. Default=3.
-    weight : ndarray
-        The weighting matrix. Default=None.
+    weight : ndarray, optional
+        The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the
+        elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`
+        matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.
 
     Returns
     -------

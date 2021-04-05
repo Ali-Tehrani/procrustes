@@ -96,8 +96,6 @@ def softassign(
         Number of iterations for softassign loop. Default=50.
     iteration_sink ： int, optional
         Number of iterations for Sinkhorn loop. Default=50.
-    linear_cost_func :  ndarray
-        Linear cost function. Default=0.
     beta_r : float, optional
         Annealing rate which should greater than 1. Default=1.10.
     beta_f : float, optional

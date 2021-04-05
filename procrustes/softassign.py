@@ -63,7 +63,7 @@ def softassign(
     weight=None
 ):
     r"""
-    Find the transformation matrix for 2-sided permutation Procrustes with softassign algorithm.
+    Find the transformation matrix for 2-sided permutation Procrustes using softassign algorithm.
 
     Parameters
     ----------
@@ -191,6 +191,15 @@ def softassign(
            [0., 1., 0., 0.]])
     >>> error # the error
     0.0
+
+    References
+    ----------
+    [1] Gold, S., & Rangarajan, A. (1996). Softassign versus softmax: Benchmarks in combinatorial
+        optimization. Advances in neural information processing systems, 626-632.
+
+    [2] Rangarajan, A., Yuille, A. L., Gold, S., & Mjolsness, E. (1997). A convergence proof for
+        the softassign quadratic assignment algorithm. Advances in neural information processing
+        systems, 620-626.
 
     """
     # pylint: disable-msg=too-many-arguments

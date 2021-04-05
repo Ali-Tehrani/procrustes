@@ -38,7 +38,7 @@ __all__ = [
 def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
                beta_r=1.10, beta_f=1.e5, epsilon=0.05, epsilon_soft=1.e-3,
                epsilon_sink=1.e-3, k=0.15, gamma_scaler=1.01, n_stop=3,
-               pad=True, remove_zero_col=True, remove_zero_row=True,
+               pad=True, unpad_col=True, unpad_row=True,
                translate=False, scale=False, check_finite=True, adapted=True,
                beta_0=None, m_guess=None, iteration_anneal=None, kopt=False,
                kopt_k=3, weight=None):
@@ -82,11 +82,12 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
         Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
         :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.
         Default=True
-    remove_zero_col : bool, optional
-        If True, zero columns (values less than 1e-8) on the right side will be removed.
-        Default=True.
-    remove_zero_row : bool, optional
-        If True, zero rows (values less than 1e-8) on the bottom will be removed.
+    unpad_col : bool, optional
+        If True, zero columns (with values less than 1.0e-8) on the right-hand side of the intial
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.
+    unpad_row : bool, optional
+        If True, zero rows (with values less than 1.0e-8) at the bottom of the intial
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.
         Default=True.
     translate : bool, optional
         If True, both arrays are translated to be centered at origin, ie columns of the arrays
@@ -179,7 +180,7 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
     if beta_r <= 1:
         raise ValueError("Argument beta_r cannot be less than 1.")
 
-    new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
+    new_a, new_b = setup_input_arrays(array_a, array_b, unpad_col, unpad_row,
                                       pad, translate, scale, check_finite, weight)
     # Initialization
     # Compute the benefit matrix

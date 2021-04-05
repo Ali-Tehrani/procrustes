@@ -35,13 +35,33 @@ __all__ = [
 ]
 
 
-def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
-               beta_r=1.10, beta_f=1.e5, epsilon=0.05, epsilon_soft=1.e-3,
-               epsilon_sink=1.e-3, k=0.15, gamma_scaler=1.01, n_stop=3,
-               pad=True, unpad_col=True, unpad_row=True,
-               translate=False, scale=False, check_finite=True, adapted=True,
-               beta_0=None, m_guess=None, iteration_anneal=None, kopt=False,
-               kopt_k=3, weight=None):
+def softassign(
+    array_a,
+    array_b,
+    pad=True,
+    unpad_col=True,
+    unpad_row=True,
+    translate=False,
+    scale=False,
+    check_finite=True,
+    iteration_soft=50,
+    iteration_sink=200,
+    beta_r=1.10,
+    beta_f=1.e5,
+    epsilon=0.05,
+    epsilon_soft=1.e-3,
+    epsilon_sink=1.e-3,
+    k=0.15,
+    gamma_scaler=1.01,
+    n_stop=3,
+    adapted=True,
+    beta_0=None,
+    m_guess=None,
+    iteration_anneal=None,
+    kopt=False,
+    kopt_k=3,
+    weight=None
+):
     r"""
     Find the transformation matrix for 2-sided permutation Procrustes with softassign algorithm.
 
@@ -51,6 +71,27 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
         The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
     array_b : ndarray
         The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference.
+    pad : bool, optional
+        Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.
+        Default=True
+    unpad_col : bool, optional
+        If True, zero columns (with values less than 1.0e-8) on the right-hand side of the intial
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.
+    unpad_row : bool, optional
+        If True, zero rows (with values less than 1.0e-8) at the bottom of the intial
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.
+        Default=True.
+    translate : bool, optional
+        If True, both arrays are translated to be centered at origin, ie columns of the arrays
+        will have mean zero.
+        Default=False.
+    scale : bool, optional
+        If True, both arrays are normalized to one with respect to the Frobenius norm, ie
+        :math:`Tr(A^T A) = 1`.
+        Default=False.
+    check_finite : bool, optional
+        If true, convert the input to an array, checking for NaNs or Infs. Default=True.
     iteration_soft ： int, optional
         Number of iterations for softassign loop. Default=50.
     iteration_sink ： int, optional
@@ -78,27 +119,6 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
     n_stop : int, optional
         Number of running steps after the calculation converges in the relaxation procedure.
         Default=10.
-    pad : bool, optional
-        Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
-        :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.
-        Default=True
-    unpad_col : bool, optional
-        If True, zero columns (with values less than 1.0e-8) on the right-hand side of the intial
-        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.
-    unpad_row : bool, optional
-        If True, zero rows (with values less than 1.0e-8) at the bottom of the intial
-        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.
-        Default=True.
-    translate : bool, optional
-        If True, both arrays are translated to be centered at origin, ie columns of the arrays
-        will have mean zero.
-        Default=False.
-    scale : bool, optional
-        If True, both arrays are normalized to one with respect to the Frobenius norm, ie
-        :math:`Tr(A^T A) = 1`.
-        Default=False.
-    check_finite : bool, optional
-        If true, convert the input to an array, checking for NaNs or Infs. Default=True.
     adapted : bool, optional
         If adapted, this function will use the tighter covergence threshold for the interior loops.
         Default=True.

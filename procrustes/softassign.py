@@ -38,7 +38,7 @@ __all__ = [
 def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
                beta_r=1.10, beta_f=1.e5, epsilon=0.05, epsilon_soft=1.e-3,
                epsilon_sink=1.e-3, k=0.15, gamma_scaler=1.01, n_stop=3,
-               pad_mode='row-col', remove_zero_col=True, remove_zero_row=True,
+               pad=True, remove_zero_col=True, remove_zero_row=True,
                translate=False, scale=False, check_finite=True, adapted=True,
                beta_0=None, m_guess=None, iteration_anneal=None, kopt=False,
                kopt_k=3, weight=None):
@@ -78,23 +78,10 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
     n_stop : int, optional
         Number of running steps after the calculation converges in the relaxation procedure.
         Default=10.
-    pad_mode : str, optional
-        Specifying how to pad the arrays, listed below. Default="row-col".
-
-            - "row"
-                The array with fewer rows is padded with zero rows so that both have the same
-                number of rows.
-            - "col"
-                The array with fewer columns is padded with zero columns so that both have the
-                same number of columns.
-            - "row-col"
-                The array with fewer rows is padded with zero rows, and the array with fewer
-                columns is padded with zero columns, so that both have the same dimensions.
-                This does not necessarily result in square arrays.
-            - "square"
-                The arrays are padded with zero rows and zero columns so that they are both
-                squared arrays. The dimension of square array is specified based on the highest
-                dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.
+    pad : bool, optional
+        Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.
+        Default=True
     remove_zero_col : bool, optional
         If True, zero columns (values less than 1e-8) on the right side will be removed.
         Default=True.
@@ -193,7 +180,7 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
         raise ValueError("Argument beta_r cannot be less than 1.")
 
     new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
-                                      pad_mode, translate, scale, check_finite, weight)
+                                      pad, translate, scale, check_finite, weight)
     # Initialization
     # Compute the benefit matrix
     array_c = np.kron(new_a, new_b)

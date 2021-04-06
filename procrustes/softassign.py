@@ -63,7 +63,7 @@ def softassign(
     weight=None
 ):
     r"""
-    Find the transformation matrix for 2-sided permutation Procrustes using softassign algorithm.
+    Perform soft-assign algorithm for any generalized quadratic assignment problem.
 
     Parameters
     ----------

@@ -36,14 +36,8 @@ __all__ = [
 
 
 def softassign(
-    array_a,
-    array_b,
-    pad=True,
-    unpad_col=True,
-    unpad_row=True,
-    translate=False,
-    scale=False,
-    check_finite=True,
+    c,
+    b,
     iteration_soft=50,
     iteration_sink=200,
     beta_r=1.10,
@@ -57,41 +51,17 @@ def softassign(
     adapted=True,
     beta_0=None,
     m_guess=None,
-    iteration_anneal=None,
-    kopt=False,
-    kopt_k=3,
-    weight=None
+    iteration_anneal=None
 ):
     r"""
     Perform soft-assign algorithm for any generalized quadratic assignment problem.
 
     Parameters
     ----------
-    array_a : ndarray
-        The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
-    array_b : ndarray
-        The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference.
-    pad : bool, optional
-        Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
-        :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.
-        Default=True
-    unpad_col : bool, optional
-        If True, zero columns (with values less than 1.0e-8) on the right-hand side of the intial
-        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.
-    unpad_row : bool, optional
-        If True, zero rows (with values less than 1.0e-8) at the bottom of the intial
-        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.
-        Default=True.
-    translate : bool, optional
-        If True, both arrays are translated to be centered at origin, ie columns of the arrays
-        will have mean zero.
-        Default=False.
-    scale : bool, optional
-        If True, both arrays are normalized to one with respect to the Frobenius norm, ie
-        :math:`Tr(A^T A) = 1`.
-        Default=False.
-    check_finite : bool, optional
-        If true, convert the input to an array, checking for NaNs or Infs. Default=True.
+    c : ndarray
+        The 2d, quadratic cost/benefit matrix.
+    b : (ndarray, None), optional
+        The 2d, linear cost matrix. If None, then b is not used and is zero. Default is None.
     iteration_soft ： int, optional
         Number of iterations for softassign loop. Default=50.
     iteration_sink ： int, optional
@@ -128,15 +98,6 @@ def softassign(
         The initial guess of the doubly-stochastic matrix. Default=None.
     iteration_anneal : int, optional
         Number of iterations for annealing loop. Default=None.
-    kopt : bool, optional
-        If True, the k_opt heuristic search will be performed. Default=False.
-    kopt_k : int, optional
-        Defines the oder of k-opt heuristic local search. For example, kopt_k=3 leads to a local
-        search of 3 items and kopt_k=2 only searches for two items locally. Default=3.
-    weight : ndarray, optional
-        The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the
-        elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`
-        matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.
 
     Returns
     -------
@@ -149,23 +110,33 @@ def softassign(
     combinatorial optimization problems. The problem can be defined as a optimization problem to
     minimize the cost to assign a set of facilities to a set of locations. The cost is a function
     of the flow between the facilities and the geographical distances among various facilities.
+    The quadratic assignemnt problem is formally defined as [1]_
+    
+    .. math::
+        \min_{P} \frac{1}{2}\sum_{aibj=1}^n C_{ab;ij}P_{ai}P_{bj} + \sum_{i,j=1}^n B_{ij}S_{ij}
 
-    The objective function (also named loss function in machine learning) is
-    defined as [1]_
+    where :math:`C` is the quadratic cost matrix, :math:`B` is the linear cost matrix
+    and :math:`P` are permutation matrices.  Different choices of :math:`C` and
+    :math:`B` gives rise to different problems. For example,  choosing :math:`B = 0` and
+    :math:`C = A \otimes B` gives rise to the two-sided permutation Procrustes problem with single
+    transform between matrices :math:`A` and :math:`B`.  Other choices gives rise to neural
+    networks, Isling models, traveling salesman problem and graph partitioning that can be found
+    within the references of [3].
+
+    This can be transformed with the constraints as [1]_
 
     .. math::
         E_{qap}(M, \mu, \nu) =
-            - \frac{1}{2}\Sigma_{aibj}C_{ai;bj}M_{ai}M_{bj}
-            + \Sigma_{a}{\mu}_a (\Sigma_i M_{ai} -1) \\
-            + \Sigma_i {\nu}_i (\Sigma_i M_{ai} -1)
-            - \frac{\gamma}{2}\Sigma_{ai} {M_{ai}}^2
-            + \frac{1}{\beta} \Sigma_{ai} M_{ai}\log{M_{ai}}
+            - \frac{1}{2}\sum_{aibj}C_{ab;ij}P_{ai}P_{bj}
+            + \sum_{a}{\mu}_a (\Sigma_i P_{ai} -1)
+            + \sum_{i,j=1}^n B_{ij} P_{ij} \\
+            + \sum_i {\nu}_i (\Sigma_i P_{ai} -1)
+            - \frac{\gamma}{2}\Sigma_{ai} {P_{ai}}^2
+            + \frac{1}{\beta} \Sigma_{ai} P_{ai}\log{P_{ai}}
 
-    where :math:`C_{ai,bj}` is the benefit matrix, :math:`M` is the
-    desired :math:`N \times N` permutation matrix. :math:`E` is the
-    energy function which comes along with a self-amplification term with
-    `\gamma`, two Lagrange parameters :math:`\mu` and :math:`\nu` for
-    constrained optimization and :math:`M_{ai} \log{M_{ai}}` servers as a
+    where :math:`E` is the energy function which comes along with a self-amplification term
+    `\gamma`, two Lagrange parameters :math:`\mu` and :math:`\nu` for the
+    constraints and :math:`M_{ai} \log{M_{ai}}` serves as a
     barrier function which ensures positivity of :math:`M_{ai}`. The
     inverse temperature :math:`\beta` is a deterministic annealing
     control parameter. More detailed information about the algorithm can be
@@ -200,6 +171,10 @@ def softassign(
     [2] Rangarajan, A., Yuille, A. L., Gold, S., & Mjolsness, E. (1997). A convergence proof for
         the softassign quadratic assignment algorithm. Advances in neural information processing
         systems, 620-626.
+
+    [3] Roth, S. (2001). Analysis of a deterministic annealing method for graph matching and
+        quadratic assignment problems in computer vision. Master's thesis, CVGPR-group,
+        University of Mannheim.
 
     """
     # pylint: disable-msg=too-many-arguments
@@ -308,19 +283,15 @@ def softassign(
             epsilon_soft = change_soft * k
             epsilon_sink = epsilon_soft * k
 
-    # Compute the error
+    # Obtain closest permutation matrix to this "approximate" permutation matrix.
     array_m = permutation(np.eye(array_m.shape[0]), array_m)["t"]
-    # k-opt heuristic
-    if kopt:
-        fun_error = lambda p: compute_error(new_a, new_b, p, p.T)
-        array_m, error = kopt_heuristic_single(fun_error, p0=array_m, k=kopt_k)
-    else:
-        error = compute_error(new_a, new_b, array_m, array_m.T)
-    return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=array_m, s=None)
+    return array_m
 
 
 def _compute_gamma(array_c, row_num, gamma_scaler):
     r"""Compute gamma for relaxation."""
+    # This can be found in "A Convergence Proof for the Softassign Quadratic Assignment Algorithm".
+    #   by Rangarajan et al from equation 7,8,9. The purpose is to make C positive definite.
     array_r = np.eye(row_num) - np.ones(row_num) / row_num
     big_r = np.kron(array_r, array_r)
     rcr = np.dot(big_r, np.dot(array_c, big_r))

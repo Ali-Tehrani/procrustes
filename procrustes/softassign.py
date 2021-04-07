@@ -144,17 +144,18 @@ def softassign(
 
     Examples
     --------
+    The following example shows how to perform the two-sided permutation Procrustes problem with
+    single transformation (i.e., undirected graph matching problem).
+
     >>> import numpy as np
     >>> array_a = np.array([[4, 5, 3, 3], [5, 7, 3, 5],
     ...                     [3, 3, 2, 2], [3, 5, 2, 5]])
-        # define a random matrix
+    >>> array_c = np.kron(new_a, new_b)  # Get the cost matrix
+    >>> row_num = new_a.shape[0]  # Get the shape of A (B and the permutation matrix as well)
     >>> perm = np.array([[0., 0., 1., 0.], [1., 0., 0., 0.],
     ...                  [0., 0., 0., 1.], [0., 1., 0., 0.]])
-        # define array_b by permuting array_a
-    >>> array_b = np.dot(perm.T, np.dot(array_a, perm))
-    >>> new_a, new_b, M_ai, error = softassign(array_a, array_b,
-    ...                                        remove_zero_col=False,
-    ...                                        remove_zero_row=False)
+    >>> array_b = np.dot(perm.T, np.dot(array_a, perm)) # define array_b by permuting array_a
+    >>> new_a, new_b, M_ai, error = softassign(array_c, b=None)
     >>> M_ai # the permutation matrix
     array([[0., 0., 1., 0.],
            [1., 0., 0., 0.],
